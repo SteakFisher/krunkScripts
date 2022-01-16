@@ -1,0 +1,192 @@
+# Client Script runs only on the client
+# KrunkScript Copyright (C) Yendis Entertainment Pty Ltd
+obj config = {
+	key: 'l', 
+	maxDisplayedPlayers: 10, 
+	leaderboard: {
+		divHeader: 'Leaderboard', 
+		css: 'width:550px;height:125px;position:absolute;' +
+			 'top:40%;left:50%;transform: translate(-50%, -50%);' +
+			 'background-color:black;cursor:pointer;border-radius:4px;' +
+			 'border:solid 2px black;display:none; opacity:0.62;' +
+             'color:white; font-size: 20px; font-weight: bold;',
+		subHeaderDiv: {
+			css: 'font-size: 18px;opacity:1; font-weight: normal;text-align: left;',
+            serialNumber: { 
+                text: 'No',
+                css: 'position: absolute;left: 2%;top: 44px;'
+            },
+            playerName: {
+                text: 'Player',
+                css: 'position: absolute;top:44px;left: 10%;'
+            },
+            timeScore: {
+                text: 'Time',
+                css: 'position: absolute;top: 44px;left: 75%;'
+            }
+		},
+        lineDivCss: 'position: absolute;left: 1%;top: 80px; height: 5px; width: 98%; background-color:white; opacity: 0.3;',
+		playerList: {
+			listGap: 30,
+            endElementGap: 40,
+			css: 'font-size: 18px;opacity:1; font-weight: normal;text-align: left;',
+			serialNumber: {
+				css: 'position: absolute;left: 2%; width: 5%; overflow:hidden;'
+			},
+			playerName: {
+				css: 'position: absolute;left: 10%; width: 62%; overflow:hidden;'
+			},
+			timeScore: {
+				css: 'position: absolute;left: 75%; width: 23%; overflow:hidden;'
+			}
+		}
+	}
+};
+
+obj const = {
+	serial: 0
+};
+# Add custom actions here
+action initializeDivs(str[] nameList, str[] timeScoreList) {
+	GAME.UI.addDIV("leaderBoard", true, config.leaderboard.css);
+	GAME.UI.updateDIVText('leaderBoard', config.leaderboard.divHeader);
+	GAME.UI.updateDIV('leaderBoard', 'color', 'white');
+
+	GAME.UI.addDIV('subHeader', true, config.leaderboard.subHeaderDiv.css, 'leaderBoard');
+
+    GAME.UI.addDIV('numSub', true, config.leaderboard.subHeaderDiv.serialNumber.css, 'subHeader');
+	GAME.UI.updateDIVText('numSub', config.leaderboard.subHeaderDiv.serialNumber.text);
+	GAME.UI.updateDIV('numSub', 'color', 'white');
+
+    GAME.UI.addDIV('playerSub', true, config.leaderboard.subHeaderDiv.playerName.css, 'subHeader');
+	GAME.UI.updateDIVText('playerSub', config.leaderboard.subHeaderDiv.playerName.text);
+	GAME.UI.updateDIV('playerSub', 'color', 'white');
+
+    GAME.UI.addDIV('timeSub', true, config.leaderboard.subHeaderDiv.timeScore.css, 'subHeader');
+	GAME.UI.updateDIVText('timeSub', config.leaderboard.subHeaderDiv.timeScore.text);
+	GAME.UI.updateDIV('timeSub', 'color', 'white');
+
+    GAME.UI.addDIV('lineDiv', true, config.leaderboard.lineDivCss, 'subHeader');
+
+	for(num i = 0; i < lengthOf nameList; i++){
+        addPlayers(nameList[i], timeScoreList[i]);
+    }
+}
+
+action addPlayers(str playerName, str timeScore){
+	if((num) const.serial < (num) config.maxDisplayedPlayers){
+		(num) const.serial += 1;
+		num topCalc = 95 + (((num)const.serial - 1) * (num) config.leaderboard.playerList.listGap);
+        str topCalcStr = toStr(topCalc);
+		str top =  topCalcStr + 'px';
+		GAME.log(top);
+
+		GAME.UI.addDIV('customDiv', true, config.leaderboard.playerList.css, 'leaderBoard');
+
+
+		GAME.UI.addDIV('playerNum' + toStr(const.serial), true, config.leaderboard.playerList.serialNumber.css, 'customDiv');
+		GAME.UI.updateDIVText('playerNum' + toStr(const.serial), toStr(const.serial));
+		GAME.UI.updateDIV('playerNum' + toStr(const.serial), 'color', 'white');
+		GAME.UI.updateDIV('playerNum' + toStr(const.serial), 'top', top);
+
+		GAME.UI.addDIV('playerName' + toStr(const.serial), true, config.leaderboard.playerList.playerName.css, 'customDiv');
+        GAME.UI.updateDIVText('playerName' + toStr(const.serial), playerName);
+		GAME.UI.updateDIV('playerName' + toStr(const.serial), 'color', 'white');
+		GAME.UI.updateDIV('playerName' + toStr(const.serial), 'top', top);
+
+        GAME.UI.addDIV('playerTime' + toStr(const.serial), true, config.leaderboard.playerList.timeScore.css, 'customDiv');
+        GAME.UI.updateDIVText('playerTime' + toStr(const.serial), timeScore);
+		GAME.UI.updateDIV('playerTime' + toStr(const.serial), 'color', 'white');
+		GAME.UI.updateDIV('playerTime' + toStr(const.serial), 'top', top);
+
+        str heightCalc = toStr(topCalc + (num) config.leaderboard.playerList.endElementGap);
+		str height =  heightCalc + 'px';
+        GAME.log(height);
+		GAME.UI.updateDIV('leaderBoard', 'height', height);
+	}
+}
+
+action renderDiv(str key){
+	if(key == (str) config.key){
+		GAME.UI.updateDIV('leaderBoard', 'display', 'block');
+		GAME.UI.updateDIV('subHeader', 'display', 'block');
+	}
+}
+
+action removeDiv(str key){
+	if(key == (str) config.key){
+		GAME.UI.updateDIV('leaderBoard', 'display', 'none');
+		GAME.UI.updateDIV('subHeader', 'display', 'none');
+	}
+}
+# Runs when the game starts
+public action start() {
+    str[] nameList = str["yes", 'nah', 'SteakFisher', 'maybe', 'prob'];
+    str[] timeScoreList = str['01:01:01:01', '01:01:01:01', '01:01:01:01', '01:01:01:01', '01:01:01:01'];
+	initializeDivs(nameList, timeScoreList);
+}
+
+# Runs every game tick
+public action update(num delta) {
+
+}
+
+# Add rendering logic in here
+public action render(num delta) {
+
+}
+
+# Player spawns in
+public action onPlayerSpawn(str id) {
+
+}
+
+# Player died
+public action onPlayerDeath(str id, str killerID) {
+
+}
+
+# Player update
+public action onPlayerUpdate(str id, num delta, static obj inputs) {
+
+}
+
+# User pressed a key
+public action onKeyPress(str key, num code) {
+	renderDiv(key);
+}
+
+# User released a key
+public action onKeyUp(str key, num code) {
+	removeDiv(key);
+}
+
+# User held a key
+public action onKeyHeld(str key, num code) {
+	
+}
+
+# User clicked on screen
+public action onMouseClick(num button, num x, num y) {
+
+}
+
+# User released clicked on screen
+public action onMouseUp(num button, num x, num y) {
+
+}
+
+# User scrolled on screen
+public action onMouseScroll(num dir) {
+
+}
+
+# User clicked a DIV (ID)
+public action onDIVClicked(str id) {
+
+}
+
+# Client receives network message
+public action onNetworkMessage(str id, obj data) {
+
+}
