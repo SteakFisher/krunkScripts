@@ -79,7 +79,6 @@ action addPlayers(str playerName, str timeScore){
 		num topCalc = 95 + (((num)const.serial - 1) * (num) config.leaderboard.playerList.listGap);
         str topCalcStr = toStr(topCalc);
 		str top =  topCalcStr + 'px';
-		GAME.log(top);
 
 		GAME.UI.addDIV('customDiv', true, config.leaderboard.playerList.css, 'leaderBoard');
 
@@ -101,7 +100,6 @@ action addPlayers(str playerName, str timeScore){
 
         str heightCalc = toStr(topCalc + (num) config.leaderboard.playerList.endElementGap);
 		str height =  heightCalc + 'px';
-        GAME.log(height);
 		GAME.UI.updateDIV('leaderBoard', 'height', height);
 	}
 }
