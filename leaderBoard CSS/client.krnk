@@ -1,10 +1,10 @@
 # Client Script runs only on the client
 # KrunkScript Copyright (C) Yendis Entertainment Pty Ltd
 obj config = {
-	key: 'l', 
-	maxDisplayedPlayers: 10, 
+	key: 'l',
+	maxDisplayedPlayers: 10,
 	leaderboard: {
-		divHeader: 'Leaderboard', 
+		divHeader: 'Leaderboard',
 		css: 'width:550px;height:125px;position:absolute;' +
 			 'top:40%;left:50%;transform: translate(-50%, -50%);' +
 			 'background-color:black;cursor:pointer;border-radius:4px;' +
@@ -12,7 +12,7 @@ obj config = {
              'color:white; font-size: 20px; font-weight: bold;',
 		subHeaderDiv: {
 			css: 'font-size: 18px;opacity:1; font-weight: normal;text-align: left;',
-            serialNumber: { 
+            serialNumber: {
                 text: 'No',
                 css: 'position: absolute;left: 2%;top: 44px;'
             },
@@ -47,6 +47,39 @@ obj const = {
 	serial: 0
 };
 # Add custom actions here
+action addPlayers(str playerName, str timeScore){
+	if((num) const.serial < (num) config.maxDisplayedPlayers){
+		(num) const.serial += 1;
+		num topCalc = 95 + (((num)const.serial - 1) * (num) config.leaderboard.playerList.listGap);
+        str topCalcStr = toStr(topCalc);
+		str top =  topCalcStr + 'px';
+		GAME.log(top);
+
+		GAME.UI.addDIV('customDiv', true, config.leaderboard.playerList.css, 'leaderBoard');
+
+
+		GAME.UI.addDIV('playerNum' + toStr(const.serial), true, config.leaderboard.playerList.serialNumber.css, 'customDiv');
+		GAME.UI.updateDIVText('playerNum' + toStr(const.serial), toStr(const.serial));
+		GAME.UI.updateDIV('playerNum' + toStr(const.serial), 'color', 'white');
+		GAME.UI.updateDIV('playerNum' + toStr(const.serial), 'top', top);
+
+		GAME.UI.addDIV('playerName' + toStr(const.serial), true, config.leaderboard.playerList.playerName.css, 'customDiv');
+        GAME.UI.updateDIVText('playerName' + toStr(const.serial), playerName);
+		GAME.UI.updateDIV('playerName' + toStr(const.serial), 'color', 'white');
+		GAME.UI.updateDIV('playerName' + toStr(const.serial), 'top', top);
+
+        GAME.UI.addDIV('playerTime' + toStr(const.serial), true, config.leaderboard.playerList.timeScore.css, 'customDiv');
+        GAME.UI.updateDIVText('playerTime' + toStr(const.serial), timeScore);
+		GAME.UI.updateDIV('playerTime' + toStr(const.serial), 'color', 'white');
+		GAME.UI.updateDIV('playerTime' + toStr(const.serial), 'top', top);
+
+        str heightCalc = toStr(topCalc + (num) config.leaderboard.playerList.endElementGap);
+		str height =  heightCalc + 'px';
+        GAME.log(height);
+		GAME.UI.updateDIV('leaderBoard', 'height', height);
+	}
+}
+
 action initializeDivs(str[] nameList, str[] timeScoreList) {
 	GAME.UI.addDIV("leaderBoard", true, config.leaderboard.css);
 	GAME.UI.updateDIVText('leaderBoard', config.leaderboard.divHeader);
@@ -71,37 +104,6 @@ action initializeDivs(str[] nameList, str[] timeScoreList) {
 	for(num i = 0; i < lengthOf nameList; i++){
         addPlayers(nameList[i], timeScoreList[i]);
     }
-}
-
-action addPlayers(str playerName, str timeScore){
-	if((num) const.serial < (num) config.maxDisplayedPlayers){
-		(num) const.serial += 1;
-		num topCalc = 95 + (((num)const.serial - 1) * (num) config.leaderboard.playerList.listGap);
-        str topCalcStr = toStr(topCalc);
-		str top =  topCalcStr + 'px';
-
-		GAME.UI.addDIV('customDiv', true, config.leaderboard.playerList.css, 'leaderBoard');
-
-
-		GAME.UI.addDIV('playerNum' + toStr(const.serial), true, config.leaderboard.playerList.serialNumber.css, 'customDiv');
-		GAME.UI.updateDIVText('playerNum' + toStr(const.serial), toStr(const.serial));
-		GAME.UI.updateDIV('playerNum' + toStr(const.serial), 'color', 'white');
-		GAME.UI.updateDIV('playerNum' + toStr(const.serial), 'top', top);
-
-		GAME.UI.addDIV('playerName' + toStr(const.serial), true, config.leaderboard.playerList.playerName.css, 'customDiv');
-        GAME.UI.updateDIVText('playerName' + toStr(const.serial), playerName);
-		GAME.UI.updateDIV('playerName' + toStr(const.serial), 'color', 'white');
-		GAME.UI.updateDIV('playerName' + toStr(const.serial), 'top', top);
-
-        GAME.UI.addDIV('playerTime' + toStr(const.serial), true, config.leaderboard.playerList.timeScore.css, 'customDiv');
-        GAME.UI.updateDIVText('playerTime' + toStr(const.serial), timeScore);
-		GAME.UI.updateDIV('playerTime' + toStr(const.serial), 'color', 'white');
-		GAME.UI.updateDIV('playerTime' + toStr(const.serial), 'top', top);
-
-        str heightCalc = toStr(topCalc + (num) config.leaderboard.playerList.endElementGap);
-		str height =  heightCalc + 'px';
-		GAME.UI.updateDIV('leaderBoard', 'height', height);
-	}
 }
 
 action renderDiv(str key){
@@ -145,7 +147,7 @@ public action onPlayerDeath(str id, str killerID) {
 }
 
 # Player update
-public action onPlayerUpdate(str id, num delta, static obj inputs) {
+public action onPlayerUpdate(str id, num delta, obj inputs) {
 
 }
 
