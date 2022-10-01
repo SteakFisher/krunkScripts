@@ -1,0 +1,30 @@
+bool e = false;
+action rayTrace(obj player){
+    # Find the point directly in front of the player (if a line of length 1 unit is drawn)
+    num xDir = (-Math.sin(player.rotation.x));
+    num zDir = (-Math.cos(player.rotation.x));
+    num yDir = Math.sin(player.rotation.y);
+    num multiplier = Math.cos(player.rotation.y);
+    
+    # Loop through 5 times
+    for(num i = 5; i < 100; i += 10){
+        # x gives the point, xDir * i multiplies the point directly in front to give another point further along the same slope
+        num x = ((num) player.position.x + (xDir * i * multiplier));
+        num y = (num) player.position.y + (yDir * i);
+        num z = ((num) player.position.z + (zDir * i * multiplier));
+        obj lmao = GAME.SCENE.addCube("", "#fff", x, y + 9, z, 1, 1, 1);
+    }
+}
+
+public action onPlayerUpdate(str id, num delta, obj inputs) {
+    obj player = GAME.PLAYERS.getSelf();
+    if(e){
+        rayTrace(player);
+    }
+}
+public action onMouseClick(num button, num x, num y){
+    e = true;
+}
+public action onMouseUp(num button, num x, num y){
+    e = false;
+}
